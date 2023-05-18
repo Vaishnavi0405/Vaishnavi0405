@@ -1,0 +1,223 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5edc0c6a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt\n",
+    "from mpl_toolkits.mplot3d import Axes3D\n",
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "290f3fe7",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b7a514c1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "data = pd.read_csv(\"House Price India.csv\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9619b3f7",
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": [
+    "#univariate analysis on price \n",
+    "variable = \"Price\"\n",
+    "mean = data[variable].mean()\n",
+    "median = data[variable].median()\n",
+    "mode = data[variable].mode().iloc[0]\n",
+    "std_dev = data[variable].std()\n",
+    "variance = data[variable].var()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "27375604",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "plt.hist(data[variable], bins=50, alpha=0.5)\n",
+    "plt.axvline(x=mean, color='r', linestyle='--', label='Mean')\n",
+    "plt.axvline(x=median, color='g', linestyle='--', label='Median')\n",
+    "plt.axvline(x=mode, color='b', linestyle='--', label='Mode')\n",
+    "plt.xlabel(variable)\n",
+    "plt.ylabel(\"Frequency\")\n",
+    "plt.legend()\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9c76688e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#descriptive statistics\n",
+    "print(\"Mean:\", mean)\n",
+    "print(\"Median:\", median)\n",
+    "print(\"Mode:\", mode)\n",
+    "print(\"Standard deviation:\", std_dev)\n",
+    "print(\"Variance:\", variance)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c4c79cec",
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": [
+    "# bivariate analysis on Price and Living Area columns\n",
+    "x = data['living area']\n",
+    "y = data['Price']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5d353b4f",
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": [
+    "plt.scatter(x, y)\n",
+    "plt.title('Living Area vs. Price')\n",
+    "plt.xlabel('Living Area')\n",
+    "plt.ylabel('Price')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3cf89503",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "corr = x.corr(y)\n",
+    "print('Correlation coefficient:', corr)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ece4a056",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "z = data['number of bedrooms']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0b46f0cf",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "fig = plt.figure(figsize=(10, 6))\n",
+    "ax = fig.add_subplot(111, projection='3d')\n",
+    "ax.scatter(x, y, z, c=z, cmap='cool')\n",
+    "ax.set_xlabel('Living Area')\n",
+    "ax.set_ylabel('Price')\n",
+    "ax.set_zlabel('Number of Bedrooms')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5881d60b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#missing values\n",
+    "data_subset = pd.concat([x, y, z], axis=1)\n",
+    "data_subset = data_subset.dropna()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "741ea95a",
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": [
+    "#descriptive statistics \n",
+    "print(data_subset.describe())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a29f9a0f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#missing values\n",
+    "data = data.apply(lambda col: np.where(np.random.rand(len(col)) < 0.1, np.nan, col))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e553a544",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "report = pd.DataFrame({\n",
+    "    'Column name': data.columns,\n",
+    "    'Number of missing values': data.isnull().sum(),\n",
+    "    'Percentage of missing values (%)': round(data.isnull().sum() / len(data) * 100, 2)\n",
+    "})\n",
+    "print(\"\\nReport for the dataset with missing values\\n------------------\")\n",
+    "print(report)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "88762a81",
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "jupytext": {
+   "cell_metadata_filter": "-all",
+   "main_language": "python",
+   "notebook_metadata_filter": "-all"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
